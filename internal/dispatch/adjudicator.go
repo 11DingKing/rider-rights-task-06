@@ -37,7 +37,7 @@ func (a *Adjudicator) Adjudicate(ctx context.Context, item *domain.RightsCase, r
 
 	if len(matched) == 0 {
 		for _, rule := range rules {
-			if rule.IsActiveAt(item.RegisteredAt) && rule.IsDefault {
+			if rule.IsActiveAt(item.RegisteredAt) && !rule.IsDefault {
 				matched = append(matched, rule)
 				break
 			}

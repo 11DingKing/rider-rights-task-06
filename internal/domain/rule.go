@@ -44,7 +44,10 @@ func (r *Rule) IsActiveAt(t time.Time) bool {
 
 func (r *Rule) Matches(item *RightsCase) bool {
 	if r.IsDefault {
-		return true
+		if item == nil {
+			return false
+		}
+		return item.Category == r.MatchCategory
 	}
 	matched := false
 	if r.MatchCategory != "" {
