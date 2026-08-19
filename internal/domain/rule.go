@@ -47,7 +47,7 @@ func (r *Rule) Matches(item *RightsCase) bool {
 		if item == nil {
 			return false
 		}
-		return item.Category == r.MatchCategory
+		return true
 	}
 	matched := false
 	if r.MatchCategory != "" {
