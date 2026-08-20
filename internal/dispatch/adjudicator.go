@@ -25,9 +25,16 @@ func (a *Adjudicator) Adjudicate(ctx context.Context, item *domain.RightsCase, r
 	default:
 	}
 
+	// 专项规则优先匹配；默认规则不参与竞争，仅收集当前生效的默认规则用于兜底，
+	// 避免默认规则在专项规则命中时抢先生效。
 	var matched []*domain.Rule
+	var defaults []*domain.Rule
 	for _, rule := range rules {
 		if !rule.IsActiveAt(item.RegisteredAt) {
+			continue
+		}
+		if rule.IsDefault {
+			defaults = append(defaults, rule)
 			continue
 		}
 		if rule.Matches(item) {
@@ -35,13 +42,10 @@ func (a *Adjudicator) Adjudicate(ctx context.Context, item *domain.RightsCase, r
 		}
 	}
 
+	// 仅在无专项规则命中时启用默认规则兜底：诉求既未命中类别也未命中关键词时，
+	// 由当前生效的默认规则接收。
 	if len(matched) == 0 {
-		for _, rule := range rules {
-			if rule.IsActiveAt(item.RegisteredAt) && !rule.IsDefault {
-				matched = append(matched, rule)
-				break
-			}
-		}
+		matched = defaults
 	}
 
 	if len(matched) == 0 {

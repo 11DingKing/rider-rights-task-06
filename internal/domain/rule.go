@@ -44,10 +44,8 @@ func (r *Rule) IsActiveAt(t time.Time) bool {
 
 func (r *Rule) Matches(item *RightsCase) bool {
 	if r.IsDefault {
-		if item == nil {
-			return false
-		}
-		return item.Category == r.MatchCategory
+		// 默认规则是兜底规则，匹配任意非空诉求；不与专项规则竞争。
+		return item != nil
 	}
 	matched := false
 	if r.MatchCategory != "" {
